@@ -25,7 +25,7 @@ def affine_forward(x, w, b):
     # TODO: Implement the affine forward pass. Store the result in out. You   #
     # will need to reshape the input into rows.                               #
     ###########################################################################
-    out = np.dot(x,w) + b
+    out = np.dot(x.reshape((x.shape[0],-1)),w) + b
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -54,9 +54,9 @@ def affine_backward(dout, cache):
     ###########################################################################
     # TODO: Implement the affine backward pass.                               #
     ###########################################################################
-    dx = np.dot(dout,w.T)
-    dw = np.dot(x.T,dout)
-    db = dout
+    dx = np.dot(dout,w.T).reshape(x.shape)
+    dw = np.dot(x.reshape((x.shape[0],-1)).T,dout)
+    db = np.sum(dout,axis=0)
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -694,6 +694,10 @@ def svm_loss(x, y):
     dx /= N
     return loss, dx
 
+def softmax(x):
+    shifted_logits = x - np.max(x, axis=1, keepdims=True)
+    Z = np.sum(np.exp(shifted_logits), axis=1, keepdims=True)
+    return np.exp(shifted_logits) / Z    
 
 def softmax_loss(x, y):
     """
